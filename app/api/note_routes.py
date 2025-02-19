@@ -9,7 +9,11 @@ note_routes = Blueprint('notes', __name__)
 @login_required
 def notes():
     notes = Note.query.filter_by(user_id=current_user.id).all()
-    return {'notes': [note.to_dict() for note in notes]}
+    count = len(notes)  
+    return {
+        'count': count,
+        'notes': [note.to_dict() for note in notes]
+    }
 
 @note_routes.route('/<int:id>')
 @login_required
@@ -18,6 +22,40 @@ def note(id):
     if note is None:
         return jsonify({"error": "Note not found"}), 404
     return note.to_dict()
+
+# 根据标题或内容搜索笔记
+@note_routes.route('/search', methods=['GET'])
+@login_required
+def search_notes():
+
+    query = request.args.get('query', '')  
+
+    if not query:
+        return jsonify({"error": "Search query is required"}), 400
+
+    notes = Note.query.filter(
+        (Note.title.ilike(f'%{query}%')) | (Note.content.ilike(f'%{query}%'))
+    ).filter_by(user_id=current_user.id).all()
+
+    count = len(notes)  
+    return {
+        'count': count,
+        'notes': [note.to_dict() for note in notes]
+    }
+
+# 根据类别搜索笔记
+
+@note_routes.route('/category/<string:category>', methods=['GET'])
+@login_required
+def get_notes_by_category(category):
+    
+    notes = Note.query.filter_by(user_id=current_user.id, category=category).all()
+    count = len(notes)  
+    return {
+        'count': count,
+        'notes': [note.to_dict() for note in notes]
+    }
+
 
 @note_routes.route('/', methods=['POST'])
 @login_required
@@ -30,6 +68,7 @@ def create_note():
     content = data.get('content')
     link = data.get('link')
     image_url = data.get('image_url')
+    category = data.get('category')
 
     if not title or not content:
         return jsonify({"error": "Title and content are required"}), 400
@@ -39,7 +78,8 @@ def create_note():
         title=title,
         content=content,
         link=link,
-        image_url=image_url
+        image_url=image_url,
+        category=category
     )
 
     db.session.add(new_note)
@@ -62,6 +102,7 @@ def update_note(id):
     note.title = data.get('title', note.title)
     note.content = data.get('content', note.content)
     note.link = data.get('link', note.link)
+    note.category = data.get('category', note.category)
     note.image_url = data.get('image_url', note.image_url)
 
     db.session.commit()

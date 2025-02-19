@@ -4,6 +4,8 @@ import SignupFormPage from '../components/SignupFormPage';
 import NotesList from '../components/ShowNotesList/NotesList';
 import NoteDetail from '../components/ShowNoteDetail/NoteDetail';
 import CreateNote from '../components/CreateNote/CreateNote';
+import SearchResult from '../components/ShowNotesList/SearchResult';
+import CategoryNotes from '../components/ShowNotesList/CategoryResult'
 import Layout from './Layout';
 
 export const router = createBrowserRouter([
@@ -30,6 +32,16 @@ export const router = createBrowserRouter([
         path: "/notes/create",
         element: <CreateNote />,
       },
+
+      {
+        path: "/notes/search/results", 
+        element: <SearchResult />, 
+      },
+      {
+        path: "/category/:category",
+        element: <CategoryNotes />, 
+      },
+
 
     ],
   },

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { thunkFetchNotes } from "../../redux/notes";
 import { Link, useNavigate } from "react-router-dom"; 
 import "./NotesList.css";
+import SearchBar from "./SearchBar";
 
 function NotesList() {
   const dispatch = useDispatch();
@@ -20,7 +21,9 @@ function NotesList() {
 
   return (
     <div className="notes-list">
-      <h1>Your Notes</h1>
+      <SearchBar />
+      {/* <h1>Your Notes</h1> */}
+      <h1 className="notes-count">You have {notes.length} {notes.length === 1 ? "note" : "notes"}</h1>
 
       <Link to="/notes/create">
         <button className="create-note-button">Create New Note</button>
@@ -34,7 +37,8 @@ function NotesList() {
             <li key={note.id} className="note-item">
               <Link to={`/notes/${note.id}`} className="note-link">
                 <h2 className="note-title">{note.title}</h2>
-                <p className="note-preview">{note.content.substring(0, 20)}...</p>
+                <p className="note-preview">{note.content.slice(0, 20).replace(/<[^>]+>/g, '')}...</p>
+
               </Link>
             </li>
           ))}

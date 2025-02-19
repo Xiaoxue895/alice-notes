@@ -9,6 +9,7 @@ class Note(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')), nullable=False)
+    category = db.Column(db.String(50), nullable=True) 
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     link = db.Column(db.String(2083), nullable=True) 
@@ -22,6 +23,7 @@ class Note(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'category': self.category,
             'title': self.title,
             'content': self.content,
             'link': self.link,

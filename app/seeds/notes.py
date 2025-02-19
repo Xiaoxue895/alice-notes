@@ -6,6 +6,7 @@ def seed_notes():
     note1 = Note(
         user_id=1, 
         title="学习 Flask",
+        category="学习",
         content="今天学习了 Flask 的基本结构，包括路由、视图函数和数据库模型。",
         link="https://flask.palletsprojects.com/",
         image_url="/images/image1.jpg",
@@ -16,6 +17,7 @@ def seed_notes():
     note2 = Note(
         user_id=1,  
         title="如何使用 SQLAlchemy",
+        category="学习",
         content="SQLAlchemy 是 Flask 项目中推荐使用的 ORM 工具。",
         link="https://docs.sqlalchemy.org/",
         image_url="/images/image2.jpg",
@@ -26,6 +28,7 @@ def seed_notes():
     note3 = Note(
         user_id=2,  
         title="健身计划",
+        category="生活",
         content="每周三次力量训练，配合合理的饮食。",
         link=None,
         image_url=None,

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { thunkCreateNote } from "../../redux/notes";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "./CreateNote.css";
 
 function CreateNote() {
@@ -11,6 +13,7 @@ function CreateNote() {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [link, setLink] = useState("");
+  const [category, setCategory] = useState("学习");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +22,7 @@ function CreateNote() {
       content,
       image_url: imageUrl,
       link,
+      category,
     };
 
     const response = await dispatch(thunkCreateNote(newNote));
@@ -34,6 +38,20 @@ function CreateNote() {
     <div className="create-note-container">
       <h1 className="create-note-title">Create New Note</h1>
       <form onSubmit={handleSubmit} className="create-note-form">
+      <label className="form-label">
+          Category:
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            className="form-input"
+          >
+            <option value="学习">学习</option>
+            <option value="工作">工作</option>
+            <option value="生活">生活</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
         <label className="form-label">
           Title:
           <input
@@ -46,11 +64,21 @@ function CreateNote() {
         </label>
         <label className="form-label">
           Content:
-          <textarea
+          <ReactQuill 
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={setContent}  
             required
             className="form-textarea"
+            modules={{
+              toolbar: [
+                [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['bold', 'italic', 'underline'],
+                [{ 'align': [] }],
+                ['link'],
+                ['image']
+              ],
+            }}
           />
         </label>
         <label className="form-label">

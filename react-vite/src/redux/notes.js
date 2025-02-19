@@ -4,6 +4,9 @@ const ADD_NOTE = 'notes/addNote';
 const UPDATE_NOTE = 'notes/updateNote';
 const REMOVE_NOTE = 'notes/removeNote';
 
+const SET_SEARCH_NOTES = 'notes/setSearchNotes'; 
+const SET_CATEGORY_NOTES = 'notes/setCategoryNotes'; 
+
 const setNotes = (notes) => ({
   type: SET_NOTES,
   payload: notes,
@@ -29,11 +32,40 @@ const removeNote = (noteId) => ({
   payload: noteId,
 });
 
+const setSearchNotes = (notes) => ({
+  type: SET_SEARCH_NOTES,
+  payload: notes,
+});
+
+const setCategoryNotes = (notes) => ({
+  type: SET_CATEGORY_NOTES,
+  payload: notes,
+});
+
 export const thunkFetchNotes = () => async (dispatch) => {
   const response = await fetch("/api/notes/");
   if (response.ok) {
     const data = await response.json();
     dispatch(setNotes(data.notes));
+  }
+};
+
+// 新增 按内容搜索
+export const thunkSearchNotes = (query) => async (dispatch) => {
+  console.log("Fetching notes with query:", query);
+  const response = await fetch(`/api/notes/search?query=${query}`);
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(setSearchNotes(data.notes));
+  }
+};
+
+// 新增 按类别搜索
+export const thunkSearchNotesByCategory = (category) => async (dispatch) => {
+  const response = await fetch(`/api/notes/category/${category}`);
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(setCategoryNotes(data.notes));
   }
 };
 
@@ -95,7 +127,12 @@ export const thunkDeleteNote = (id) => async (dispatch) => {
   }
 };
 
-const initialState = { notes: [], noteDetail: null };
+const initialState = { 
+  notes: [], 
+  noteDetail: null, 
+  searchNotes: [], 
+  categoryNotes: [], 
+};
 
 function notesReducer(state = initialState, action) {
   switch (action.type) {
@@ -117,6 +154,10 @@ function notesReducer(state = initialState, action) {
         ...state,
         notes: state.notes.filter((note) => note.id !== action.payload),
       };
+    case SET_SEARCH_NOTES:
+      return { ...state, searchNotes: action.payload };
+    case SET_CATEGORY_NOTES:
+      return { ...state, categoryNotes: action.payload };
     default:
       return state;
   }
