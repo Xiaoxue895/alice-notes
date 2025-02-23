@@ -7,6 +7,8 @@ const REMOVE_NOTE = 'notes/removeNote';
 const SET_SEARCH_NOTES = 'notes/setSearchNotes'; 
 const SET_CATEGORY_NOTES = 'notes/setCategoryNotes'; 
 
+const SET_NOTE_STATS = 'notes/setNoteStats';
+
 const setNotes = (notes) => ({
   type: SET_NOTES,
   payload: notes,
@@ -40,6 +42,11 @@ const setSearchNotes = (notes) => ({
 const setCategoryNotes = (notes) => ({
   type: SET_CATEGORY_NOTES,
   payload: notes,
+});
+
+const setNoteStats = (stats) => ({
+  type: SET_NOTE_STATS,
+  payload: stats,
 });
 
 export const thunkFetchNotes = () => async (dispatch) => {
@@ -127,11 +134,24 @@ export const thunkDeleteNote = (id) => async (dispatch) => {
   }
 };
 
+// 返回统计数据
+export const thunkFetchNoteStats = () => async (dispatch) => {
+  const response = await fetch("/api/notes/stats");
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(setNoteStats(data));
+  } else {
+    const errorMessages = await response.json();
+    return errorMessages;
+  }
+};
+
 const initialState = { 
   notes: [], 
   noteDetail: null, 
   searchNotes: [], 
-  categoryNotes: [], 
+  categoryNotes: [],
+  noteStats: null, 
 };
 
 function notesReducer(state = initialState, action) {
@@ -158,6 +178,8 @@ function notesReducer(state = initialState, action) {
       return { ...state, searchNotes: action.payload };
     case SET_CATEGORY_NOTES:
       return { ...state, categoryNotes: action.payload };
+    case SET_NOTE_STATS: 
+      return { ...state, noteStats: action.payload };
     default:
       return state;
   }

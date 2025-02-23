@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.models import Note
 from app import db
+from datetime import datetime, timedelta
+from sqlalchemy import func
 
 note_routes = Blueprint('notes', __name__)
 
@@ -22,6 +24,63 @@ def note(id):
     if note is None:
         return jsonify({"error": "Note not found"}), 404
     return note.to_dict()
+
+@note_routes.route('/stats')
+@login_required
+def overview_stats():
+    now = datetime.utcnow()
+    one_week_ago = now - timedelta(days=7)
+    one_month_ago = now - timedelta(days=30)
+
+    categories = ['学习', '工作', '生活', '其他']
+    category_stats = {}
+    for category in categories:
+        week_count = Note.query.filter(
+            Note.user_id == current_user.id,
+            Note.category == category,
+            Note.created_at >= one_week_ago
+        ).count()
+
+        month_count = Note.query.filter(
+            Note.user_id == current_user.id,
+            Note.category == category,
+            Note.created_at >= one_month_ago
+        ).count()
+
+        category_stats[category] = {
+            'week_count': week_count,
+            'month_count': month_count
+        }
+
+    week_count = Note.query.filter(Note.user_id == current_user.id, Note.created_at >= one_week_ago).count()
+    month_count = Note.query.filter(Note.user_id == current_user.id, Note.created_at >= one_month_ago).count()
+
+    daily_category_counts = []
+    for i in range(30):
+        day_date = (now - timedelta(days=i)).date()
+
+        day_stats = {
+            'date': str(day_date),
+            'categories': {}
+        }
+
+        for category in categories:
+            count = Note.query.filter(
+                Note.user_id == current_user.id,
+                Note.category == category,
+                func.date(Note.created_at) == day_date
+            ).count()
+            day_stats['categories'][category] = count
+
+        daily_category_counts.append(day_stats)
+
+    return jsonify({
+        "week_count": week_count,
+        "month_count": month_count,
+        "category_counts": category_stats,
+        "daily_category_counts": daily_category_counts
+    })
+
 
 # 根据标题或内容搜索笔记
 @note_routes.route('/search', methods=['GET'])

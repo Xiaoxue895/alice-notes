@@ -6,6 +6,7 @@ import NoteDetail from '../components/ShowNoteDetail/NoteDetail';
 import CreateNote from '../components/CreateNote/CreateNote';
 import SearchResult from '../components/ShowNotesList/SearchResult';
 import CategoryNotes from '../components/ShowNotesList/CategoryResult'
+import NoteStats from '../components/ShowNoteStates/ShowNoteStates';
 import Layout from './Layout';
 
 export const router = createBrowserRouter([
@@ -41,8 +42,10 @@ export const router = createBrowserRouter([
         path: "/category/:category",
         element: <CategoryNotes />, 
       },
-
-
+      {
+        path: "/states",
+        element: <NoteStats />, 
+      },
     ],
   },
 ]);
