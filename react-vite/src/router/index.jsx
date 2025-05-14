@@ -7,6 +7,7 @@ import CreateNote from '../components/CreateNote/CreateNote';
 import SearchResult from '../components/ShowNotesList/SearchResult';
 import CategoryNotes from '../components/ShowNotesList/CategoryResult'
 import NoteStats from '../components/ShowNoteStates/ShowNoteStates';
+import UserSocketList from '../components/userList/userList';
 import Layout from './Layout';
 
 export const router = createBrowserRouter([
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <NotesList />,
+      },
+      {
+        path: "/testwebsocket",
+        element: <UserSocketList />,
       },
       {
         path: "login",
